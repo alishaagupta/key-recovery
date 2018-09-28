@@ -24,7 +24,6 @@ exports.Submit             = Submit ;
 exports.currencyChange     = currencyChange ;
 exports.initialiseCoin     = initialiseCoin ;
 exports.checkBalance       = checkBalance;
-exports.showCoins          = showCoins ;
 exports.getTransaction     = getTransaction ;
 exports.submitTransaction  = submitTransaction ;
 exports.inactiveAssets     = inactiveAssets;
@@ -34,7 +33,7 @@ const pg = require('pg');
 var pgp = require('pg-promise')(/*options*/)
 
 
-var db = pgp('postgres://postgres:test@127.0.0.1:5432/coinlocal')
+var db = pgp('postgres://postgres:test@127.0.0.1:5432/maxwallet')
 
 
 //info_search o
@@ -159,7 +158,7 @@ function test(req,res) {
     
 
 
- var Query = "SELECT * FROM usersinfo";
+ var Query = "SELECT * FROM wallet_info";
 
 
   db.any(Query)
@@ -379,43 +378,7 @@ client.sendRawTransaction(txHash,true).then((transactionID) => {
 
 }
 
-function showCoins(req,res) {
 
-  var handlerInfo = {
-    "apiModule" : "users",
-    "apiHandler" : "showCoins"
-  };
-
-
-wallet_id = req.body.wallet_id ; 
-
- var Query = "SELECT * from assets where asset_id not in (SELECT asset_id from personal_info where wallet_id=$1)";
-
-
-  db.any(Query,[wallet_id])
-    .then(function(data){
-        // success;
-        console.log("success")
-       res.send({
-      "log" : "Date inserted successfully",
-      "data": data,
-      // "flag": constants.responseFlags.ACTION_COMPLETE
-    });
-    })
-    .catch(function(error) {
-        // error;
-
-        res.send({
-        "log" : "Internal server error",
-        // "flag": constants.responseFlags.ACTION_FAILED
-      });
-
-      console.log(error);
-
-    });
-
-
-}
 
 
 function showAllCoins(req,res) {
