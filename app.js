@@ -51,8 +51,10 @@ app.get('/test', users.test);
 
 app.post('/create_wallet',users.createWallet);
 
+app.post('/show_all_coins',users.showAllCoins);
 
-app.post('/submit',users.Submit)
+
+app.post('/submit',users.Submit);
 
 
 

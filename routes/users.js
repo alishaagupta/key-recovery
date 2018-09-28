@@ -28,7 +28,7 @@ exports.showCoins          = showCoins ;
 exports.getTransaction     = getTransaction ;
 exports.submitTransaction  = submitTransaction ;
 exports.inactiveAssets     = inactiveAssets;
-
+exports.showAllCoins       = showAllCoins ;
 
 const pg = require('pg');
 var pgp = require('pg-promise')(/*options*/)
@@ -199,6 +199,8 @@ function inactiveAssets(req,res) {
     "apiHandler":"signUpUser"
   };
     
+
+    var wallet_id = req.body.wallet_id ;
 
 
  var Query = "SELECT asset_id FROM personal_info where wallet_id=$1";
@@ -416,6 +418,42 @@ wallet_id = req.body.wallet_id ;
 }
 
 
+function showAllCoins(req,res) {
+
+  var handlerInfo = {
+    "apiModule" : "users",
+    "apiHandler" : "showCoins"
+  };
+
+
+
+ var Query = "SELECT * FROM assets";
+
+
+  db.any(Query)
+    .then(function(data){
+        // success;
+        console.log("success")
+       res.send({
+      "log" : "Date sent successfully",
+      "data": data,
+      // "flag": constants.responseFlags.ACTION_COMPLETE
+    });
+    })
+    .catch(function(error) {
+        // error;
+
+        res.send({
+        "log" : "Internal server error",
+        // "flag": constants.responseFlags.ACTION_FAILED
+      });
+
+      console.log(error);
+
+    });
+
+
+}
 
 
 /*
