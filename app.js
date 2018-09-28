@@ -71,10 +71,9 @@ app.post('/submit_transaction', users.submitTransaction);
 app.post('/transaction_status',users.getTransaction);
 
 
-// app.post('/send_coins',function(req,res){
-// 	users.sendCoins},error);
+app.post('/send_coins',users.sendCoins);
 
-// app.post('/receive_coins',users.receiveCoins,error);
+app.post('/receive_coins',users.receiveCoins);
 
 
 /**
