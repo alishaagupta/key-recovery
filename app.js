@@ -65,7 +65,7 @@ app.post('/initialise_coin',users.initialiseCoin);
 
 app.post('/checkBalance',users.checkBalance);
 
-app.post('/show_coins', users.showCoins);
+app.post('/inactiveAssets', users.inactiveAssets);
 
 app.post('/submit_transaction', users.submitTransaction);
 

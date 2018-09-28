@@ -203,7 +203,7 @@ function inactiveAssets(req,res) {
     var wallet_id = req.body.wallet_id ;
 
 
- var Query = "SELECT asset_id FROM personal_info where wallet_id=$1";
+ var Query = "SELECT * from assets where asset_id not in (SELECT asset_id from personal_info where wallet_id=$1)";
 
 
   db.any(Query,[wallet_id])
@@ -389,7 +389,7 @@ function showCoins(req,res) {
 
 wallet_id = req.body.wallet_id ; 
 
- var Query = "SELECT asset_id FROM personal_info where wallet_id=$1";
+ var Query = "SELECT * from assets where asset_id not in (SELECT asset_id from personal_info where wallet_id=$1)";
 
 
   db.any(Query,[wallet_id])
