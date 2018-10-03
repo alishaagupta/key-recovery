@@ -74,6 +74,8 @@ app.post('/send_coins',users.sendCoins);
 
 app.post('/receive_coins',users.receiveCoins);
 
+app.post('/estimate_fees',users.estimateFees);
+
 
 /**
  * To change the port, please edit the configuration file

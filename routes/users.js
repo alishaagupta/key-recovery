@@ -20,7 +20,7 @@ exports.sendCoins          = sendCoins ;
 exports.receiveCoins       = receiveCoins ;
 exports.test               = test ;
 
-
+exports.estimateFees      = estimateFees ;
 exports.currencyChange     = currencyChange ;
 exports.initialiseCoin     = initialiseCoin ;
 exports.checkBalance       = checkBalance;
@@ -278,53 +278,39 @@ function checkBalance(req,res) {
   var address = req.body.address ;
 
 var utxo ;
-var fees ;
+
+var sum ;
 
 var min_conf = 0
 var max_conf = 99999
+var blocks=6 
 
 client.listUnspent(min_conf,max_conf,[address])
 .then(function(unspent) {
 
-var utxo = unspent ;
-
-var sum = 0;
+utxo = JSON.stringify(unspent) ;
+console.log((utxo))
+sum = 0;
   for (var i = 0; i < unspent.length; i++) {
     sum += unspent[i].amount;
     
 }
-})
-
-
-
-client.estimateSmartFee(blocks).then((result) => {
- 
- fees = result;
- 
-  console.log("Fees: "+ result)
-  });
-
-
-console.log("Balance of given address is :" +  sum);
 
 res.send({
 
 "flag": constants.responseFlags.ACTION_COMPLETE ,
 "balance" :  sum ,
 "utxo" : utxo ,
-"fees" : fees ,
 "log" : "Data fetched successfully"
 
 });
-
-
-
-    .catch(error => {
+})
+    .catch(function(error) {
         // error;
 
         res.send({
         "log" : "Internal server error",
-        "flag": constants.responseFlags.ACTION_FAILED,
+        "flag": constants.responseFlags.ACTION_FAILED ,
         "error" : error
       });
 
@@ -337,6 +323,42 @@ res.send({
 
 }
 
+
+function estimateFees(req,res){
+
+  var blocks = 6 ;
+
+  client.estimateSmartFee(blocks)
+.then((result) => {
+ 
+ fees =  JSON.stringify(result);
+
+res.send({
+
+"flag": constants.responseFlags.ACTION_COMPLETE ,
+"fees" :  fees ,
+"log" : "Data fetched successfully"
+
+});
+
+
+  console.log("Fees: "+ JSON.stringify(result));
+  })
+.catch(function(error) {
+        // error;
+
+        res.send({
+        "log" : "Internal server error",
+        "flag": constants.responseFlags.ACTION_FAILED ,
+        "error" : error
+      });
+
+
+
+    });
+
+
+}
 
 
 
