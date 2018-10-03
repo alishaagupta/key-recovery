@@ -20,12 +20,12 @@ exports.sendCoins          = sendCoins ;
 exports.receiveCoins       = receiveCoins ;
 exports.test               = test ;
 
-exports.Submit             = Submit ;
+
 exports.currencyChange     = currencyChange ;
 exports.initialiseCoin     = initialiseCoin ;
 exports.checkBalance       = checkBalance;
 exports.getTransaction     = getTransaction ;
-exports.submitTransaction  = submitTransaction ;
+
 exports.inactiveAssets     = inactiveAssets;
 exports.showAllCoins       = showAllCoins ;
 
@@ -91,7 +91,7 @@ function getTransaction(req,res) {
      };
 
 
-  var transactionId  = req.body.transactionId ;
+  var transaction_id  = req.body.transaction_id ;
 
   client.getTransaction(txid)
   .then((result) => {
@@ -277,11 +277,16 @@ function checkBalance(req,res) {
 
   var address = req.body.address ;
 
+var utxo ;
+var fees ;
+
 var min_conf = 0
 var max_conf = 99999
 
 client.listUnspent(min_conf,max_conf,[address])
 .then(function(unspent) {
+
+var utxo = unspent ;
 
 var sum = 0;
   for (var i = 0; i < unspent.length; i++) {
@@ -289,12 +294,23 @@ var sum = 0;
     
 }
 
+
+
+client.estimateSmartFee(blocks).then((result) => {
+ 
+ fees = result
+  console.log("Fees: "+ result)
+  } );
+
+
 console.log("Balance of given address is :" +  sum);
 
 res.send({
 
 "flag": constants.responseFlags.ACTION_COMPLETE ,
 "balance" :  sum ,
+"utxo" : utxo ,
+"fees" : fees ,
 "log" : "Data fetched successfully"
 
 });
@@ -322,51 +338,7 @@ res.send({
 
 
 
-function Submit(req,res) {
 
-
-  var handlerInfo = {
-    "apiModule" : "users",
-    "apiHandler" : "Submit"
-  };
-
- 
- var asset_id         = req.body.asset_id ;
- var wallet_id        = "ss";
- var asset_address    = req.body.asset_address ;
- var asset_data       = req.body.asset_data ;
-
-
-
- var Query = "INSERT INTO personal_info(asset_id,wallet_id,asset_address,asset_data,created_on) VALUES($1,$2,$3,$4,$5)";
-
-
-  db.none(Query, [asset_id,wallet_id,asset_address,asset_data,new Date()])
-    .then(function(result){
-        // success;
-        console.log("success")
-       res.send({
-      "log" : "Date inserted successfully",
-      "result": result,
-      "flag": constants.responseFlags.ACTION_COMPLETE
-    });
-    })
-    .catch(error => {
-        // error;
-
-        res.send({
-        "log" : "Internal server error",
-        "flag": constants.responseFlags.ACTION_FAILED,
-        "error" : error
-      });
-
-
-
-    });
-
-
-
-}
 /*
  * coin dependent function, depends on asset id 
  * this api creates public key, private key and address of that particular coin
@@ -383,67 +355,43 @@ function sendCoins(req,res) {
 	};
 
  
- var asset_id   = req.body.asset_id ;
- var coin_info  = req.body.coin_info;
- var address    = req.body.address ;
-
-var utxo;
-var fees ;
-
-var min_conf = 0 
-var max_conf = 99999
-client.listUnspent(min_conf,max_conf,[address]).then((unspent) => 
-
-  // utxo = unspent;
-  console.log("UTXO: " + JSON.stringify(unspent)));
-
-
-client.estimateSmartFee(blocks).then((result) => {
- 
- fees = result
-  console.log("Fees: "+ result)
-  } );
-
-res.send({
-
-"utxo" : JSON.stringify(unspent) ,
-"fees" : fees ,
-"flag": constants.responseFlags.ACTION_COMPLETE
-
-})
+ var transaction_hash = req.body.transaction_hash ;
 
 
 
-}
 
-
-function submitTransaction(req,res) {
-
-  var handlerInfo = {
-    "apiModule" : "users",
-    "apiHandler" : "createKeys"
-  };
-
-var hash = req.body.hash ;
-
-client.sendRawTransaction(txHash,true).then((transactionID) => {
+client.sendRawTransaction(txHash,true)
+.then((transaction_ID) => {
 
   res.send({
 
     "log" : "Data fetched successfully" ,
-    "result" : transactionID,
+    "result" : transaction_ID,
     "flag": constants.responseFlags.ACTION_COMPLETE
 
 
+  })
+})
+  .catch(function(error) {
+        // error;
+
+        res.send({
+        "log" : "Internal server error",
+        "flag": constants.responseFlags.ACTION_FAILED,
+        "error" : error
+      });
 
 
-  });
 
-});
-
-
-
+    });
 }
+
+
+
+
+
+
+
 
 
 

@@ -54,7 +54,6 @@ app.post('/create_wallet',users.createWallet);
 app.post('/show_all_coins',users.showAllCoins);
 
 
-app.post('/submit',users.Submit);
 
 
 
@@ -63,11 +62,9 @@ app.post('/currency_change',users.currencyChange);
 
 app.post('/initialise_coin',users.initialiseCoin);
 
-app.post('/checkBalance',users.checkBalance);
+app.post('/check_balance',users.checkBalance);
 
-app.post('/inactiveAssets', users.inactiveAssets);
-
-app.post('/submit_transaction', users.submitTransaction);
+app.post('/inactive_assets', users.inactiveAssets);
 
 
 app.post('/transaction_status',users.getTransaction);
