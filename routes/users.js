@@ -33,7 +33,7 @@ const pg = require('pg');
 var pgp = require('pg-promise')(/*options*/)
 
 
-var db = pgp('postgres://postgres:test@127.0.0.1:5432/coinlocal')
+var db = pgp('postgres://postgres:test@127.0.0.1:5432/maxwallet')
 
 
 // index_walletinfo
@@ -293,14 +293,16 @@ var sum = 0;
     sum += unspent[i].amount;
     
 }
+})
 
 
 
 client.estimateSmartFee(blocks).then((result) => {
  
- fees = result
+ fees = result;
+ 
   console.log("Fees: "+ result)
-  } );
+  });
 
 
 console.log("Balance of given address is :" +  sum);
@@ -316,7 +318,7 @@ res.send({
 });
 
 
-} )
+
     .catch(error => {
         // error;
 
