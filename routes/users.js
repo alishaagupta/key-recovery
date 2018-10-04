@@ -203,8 +203,8 @@ function test(req,res) {
   };
 
 
-  var addresses = []
-  addresses =  req.body.addresses ;
+
+ var addresses =  req.body.addresses ;
 
 
   
