@@ -12,6 +12,10 @@ var Coins                 = require('./Coins.js');
 var express               = require('express');
 var uniqueid              = require('shortid');
 var constants             = require('./constants');
+var utils                 = require('./commonfucntions.js');
+
+var blockexplorer = require('blockchain.info/blockexplorer').usingNetwork(3);
+
 
 
 exports.createWallet       = createWallet ;
@@ -56,6 +60,10 @@ function createWallet(req,res) {
    var wallet_id          = uniqueid.generate() ;
 
 
+  if(utils.checkBlank([private_key_hash, public_key, wallet_id])) {
+    return res.send(constants.parameterMissingResponse);
+  }
+
  var Query = "INSERT INTO wallet_info(private_keyhash,public_key,logged_on,wallet_id) VALUES($1,$2,$3,$4)";
 
 
@@ -93,7 +101,13 @@ function getTransaction(req,res) {
 
   var transaction_id  = req.body.transaction_id ;
 
-  client.getTransaction(txid)
+
+ if(utils.checkBlank([transaction_id])) {
+    return res.send(constants.parameterMissingResponse);
+  }
+
+
+  client.getTransaction(transaction_id)
   .then((result) => {
     console.log("Transaction details: " + JSON.stringify(result))
 
@@ -123,6 +137,7 @@ function getTransaction(req,res) {
 
 }
 
+
 function initialiseCoin(req,res){
 
 
@@ -137,6 +152,12 @@ function initialiseCoin(req,res){
   var asset_address = req.body.asset_address;
   var asset_data    = req.body.asset_data ;
 
+var array = re
+
+   if(utils.checkBlank([asset_id,wallet_id,asset_address,asset_data])) {
+    return res.send(constants.parameterMissingResponse);
+  }
+
 var Query = "INSERT INTO personal_info(asset_id,wallet_id,asset_address,asset_data,created_on) VALUES($1,$2,$3,$4,$5)";
 
 
@@ -149,7 +170,7 @@ var Query = "INSERT INTO personal_info(asset_id,wallet_id,asset_address,asset_da
 
 
        res.send({
-      "log" : "Date inserted successfully",
+      "log" : "Data inserted successfully",
       "result": result,
       "flag": constants.responseFlags.ACTION_COMPLETE
     });
@@ -276,6 +297,11 @@ function checkBalance(req,res) {
 
 
   var address = req.body.address ;
+
+
+   if(utils.checkBlank([address])) {
+    return res.send(constants.parameterMissingResponse);
+  }
 
 var utxo ;
 
@@ -475,9 +501,10 @@ function receiveCoins(req,res) {
 	};
 
  
- var asset_id   = req.body.asset_id ;
- var coin_info  = req.body.coin_info;
- var address    = req.body.address ;
+var addresses = req.body.addresses ;
+
+
+blockexplorer.getMultiAddress(addresses);
 
 
 
