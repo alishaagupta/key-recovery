@@ -224,7 +224,7 @@ client.listUnspent(min_conf,max_conf,addresses)
 .then(function(unspent) {
 
 console.log(unspent.length) ;
- 
+
 sum = 0;
   for (var i = 0; i < unspent.length; i++) {
     sum += unspent[i].amount;
@@ -528,7 +528,7 @@ function receiveCoins(req,res) {
 var addresses = req.body.addresses ;
 
 
-blockexplorer.getAddress(addresses,{apiCode : "bed9e8b8-5130-4fc3-9f21-df7e026cc55a"})
+blockexplorer.getMultiAddress(addresses,{apiCode : "bed9e8b8-5130-4fc3-9f21-df7e026cc55a"})
 .then((result) => {
 
   res.send({
