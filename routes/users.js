@@ -223,8 +223,6 @@ var blocks=6
 client.listUnspent(min_conf,max_conf,addresses)
 .then(function(unspent) {
 
-utxo = JSON.stringify(unspent) ;
-console.log((utxo))
 sum = 0;
   for (var i = 0; i < unspent.length; i++) {
     sum += unspent[i].amount;
@@ -235,7 +233,7 @@ res.send({
 
 "flag": constants.responseFlags.ACTION_COMPLETE ,
 "balance" :  sum ,
-"utxo" : utxo ,
+"utxo" : unspent ,
 "log" : "Data fetched successfully"
 
 });

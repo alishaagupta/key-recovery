@@ -45,7 +45,7 @@ app.get('/', function(req, res) {
 });
 
 
-app.get('/test', users.test);
+app.post('/test', users.test);
 
 
 
@@ -76,6 +76,9 @@ app.post('/receive_coins',users.receiveCoins);
 
 app.post('/estimate_fees',users.estimateFees);
 
+
+
+//https://blockchain.info/multiaddr?active=$address|$address
 
 /**
  * To change the port, please edit the configuration file
