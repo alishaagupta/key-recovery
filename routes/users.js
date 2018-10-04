@@ -506,7 +506,7 @@ function receiveCoins(req,res) {
 var addresses = req.body.addresses ;
 
 
-blockexplorer.getAddress(addresses)
+blockexplorer.getAddress(addresses,{})
 .then((result) => {
 
   res.send({
