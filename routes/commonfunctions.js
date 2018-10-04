@@ -2,10 +2,10 @@ var gcm            = require('node-gcm');
 var request        = require('request');
 var apns           = require('apn');
 var constants      = require('./constants');
-var messenger      = require('./messenger');
-var logging        = require('./logging');
-var users          = require('./users');
-var crypto         = require('crypto');
+// var messenger      = require('./messenger');
+// var logging        = require('./logging');
+// var users          = require('./users');
+// var crypto         = require('crypto');
 
 exports.checkBlank                     = checkBlank;
 
