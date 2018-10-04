@@ -221,7 +221,7 @@ var max_conf = 99999
 // for (var k=0 ; k< address.length ; k++) {
 
 // }
-client.listUnspent(min_conf,max_conf,addresses)
+client.listUnspent(min_conf,max_conf,["n39m7fKbci56nV6HuWVSiM9rxhJT4ueB3a"])
 .then(function(unspent) {
 
 console.log(unspent.length) ;
