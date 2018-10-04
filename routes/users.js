@@ -196,7 +196,7 @@ var Query = "INSERT INTO personal_info(asset_id,wallet_id,asset_address,asset_da
 
 
 
-function test(req,res) {
+function checkBalance(req,res) {
  var handlerInfo = {
     "apiModule" : "users",
     "apiHandler" : "Submit"
@@ -313,7 +313,7 @@ function inactiveAssets(req,res) {
 
 
 
-function checkBalance(req,res) {
+function test(req,res) {
 
   var handlerInfo = {
     "apiModule" : "users",
