@@ -298,57 +298,57 @@ function checkBalance(req,res) {
   };
 
 
-  var address = []
-  address = req.body.address ;
+  // var address = []
+//  var  address = req.body.address ;
 
 
-   if(utils.checkBlank([address])) {
-    return res.send(constants.parameterMissingResponse);
-  }
+//    if(utils.checkBlank([address])) {
+//     return res.send(constants.parameterMissingResponse);
+//   }
 
-var utxo ;
+// var utxo ;
 
-var sum ;
+// var sum ;
 
-var min_conf = 0
-var max_conf = 99999
-var blocks=6 
+// var min_conf = 0
+// var max_conf = 99999
+// var blocks=6 
 
-// for(var j=0 ; j< address.length ; j++) {
+// // for(var j=0 ; j< address.length ; j++) {
 
-client.listUnspent(min_conf,max_conf,[address])
-.then(function(unspent) {
+// client.listUnspent(min_conf,max_conf,[address])
+// .then(function(unspent) {
 
-utxo = JSON.stringify(unspent) ;
-console.log((utxo))
-sum = 0;
-  for (var i = 0; i < unspent.length; i++) {
-    sum += unspent[i].amount;
+// utxo = JSON.stringify(unspent) ;
+// console.log((utxo))
+// sum = 0;
+//   for (var i = 0; i < unspent.length; i++) {
+//     sum += unspent[i].amount;
     
-}
-}
+// }
+// }
 
-res.send({
+// res.send({
 
-"flag": constants.responseFlags.ACTION_COMPLETE ,
-"balance" :  sum ,
-"utxo" : utxo ,
-"log" : "Data fetched successfully"
+// "flag": constants.responseFlags.ACTION_COMPLETE ,
+// "balance" :  sum ,
+// "utxo" : utxo ,
+// "log" : "Data fetched successfully"
 
-});
-})
-    .catch(function(error) {
-        // error;
+// });
+// })
+//     .catch(function(error) {
+//         // error;
 
-        res.send({
-        "log" : "Internal server error",
-        "flag": constants.responseFlags.ACTION_FAILED ,
-        "error" : error
-      });
+//         res.send({
+//         "log" : "Internal server error",
+//         "flag": constants.responseFlags.ACTION_FAILED ,
+//         "error" : error
+//       });
 
 
 
-    });
+//     });
 
 
 
