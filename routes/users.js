@@ -204,9 +204,10 @@ function test(req,res) {
 
 
 
- var addresses =  req.body.addresses ;
+ var addresses =  [];
+ addresses =req.body.addresses ;
 
-console.log(typeof(addresses));
+
   
 var utxo ;
 
