@@ -13,8 +13,10 @@ var express               = require('express');
 var uniqueid              = require('shortid');
 var constants             = require('./constants');
 var utils                 = require('./commonfunctions.js');
+var blockchain            = require('blockchain.info')
 
-var blockexplorer = require('blockchain.info/blockexplorer').usingNetwork(3);
+
+var blockexplorer         = require('blockchain.info/blockexplorer').usingNetwork(3);
 
 
 
@@ -504,7 +506,17 @@ function receiveCoins(req,res) {
 var addresses = req.body.addresses ;
 
 
-res.send(blockexplorer.getMultiAddress(addresses));
+blockexplorer.getMultiAddress(addresses)
+.then((result) => {
+
+  res.send({
+
+    "log" : "Data Fetched Successfully",
+    "result" : result ,
+    "flag": constants.responseFlags.ACTION_COMPLETE
+
+  })
+})
 
 }
 
