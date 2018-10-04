@@ -314,7 +314,7 @@ var min_conf = 0
 var max_conf = 99999
 var blocks=6 
 
-for(var j=0 ; j< address.length ; j++) {
+// for(var j=0 ; j< address.length ; j++) {
 
 client.listUnspent(min_conf,max_conf,[address])
 .then(function(unspent) {
@@ -374,7 +374,7 @@ res.send({
 });
 
 
-
+  // console.log("Fees: "+ JSON.stringify(result.feerate));
   })
 .catch(function(error) {
         // error;
