@@ -197,39 +197,61 @@ var Query = "INSERT INTO personal_info(asset_id,wallet_id,asset_address,asset_da
 
 
 function test(req,res) {
-   var handlerInfo   = {
-    "apiModule": "users",
-    "apiHandler":"signUpUser"
+ var handlerInfo = {
+    "apiModule" : "users",
+    "apiHandler" : "Submit"
   };
+
+
+  var addresses = []
+  addresses =  req.body.addresses ;
+
+
+  
+var utxo ;
+
+var sum ;
+
+var min_conf = 0
+var max_conf = 99999
+var blocks=6 
+
+
+// for (var k=0 ; k< address.length ; k++) {
+
+// }
+client.listUnspent(min_conf,max_conf,addresses)
+.then(function(unspent) {
+
+utxo = JSON.stringify(unspent) ;
+console.log((utxo))
+sum = 0;
+  for (var i = 0; i < unspent.length; i++) {
+    sum += unspent[i].amount;
     
+}
 
+res.send({
 
- var Query = "SELECT * FROM wallet_info";
+"flag": constants.responseFlags.ACTION_COMPLETE ,
+"balance" :  sum ,
+"utxo" : utxo ,
+"log" : "Data fetched successfully"
 
-
-  db.any(Query)
-    .then(function(data){
-        // success;
-        console.log("success")
-       res.send({
-      "log" : "Date inserted successfully",
-      "result": data,
-      "flag": constants.responseFlags.ACTION_COMPLETE
-    });
-    })
+});
+})
     .catch(function(error) {
         // error;
 
         res.send({
         "log" : "Internal server error",
-        "flag": constants.responseFlags.ACTION_FAILED,
+        "flag": constants.responseFlags.ACTION_FAILED ,
         "error" : error
       });
 
-  
+
 
     });
-
 
 
 
@@ -316,7 +338,7 @@ var blocks=6
 client.listUnspent(min_conf,max_conf,[address])
 .then(function(unspent) {
 
-utxo = JSON.stringify(unspent) ;
+utxo = unspent ;
 console.log((utxo))
 sum = 0;
   for (var i = 0; i < unspent.length; i++) {
