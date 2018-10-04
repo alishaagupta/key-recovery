@@ -206,7 +206,7 @@ function test(req,res) {
 
  var addresses =  req.body.addresses ;
 
-console.log(addresses);
+console.log(addresses.toString());
   
 var utxo ;
 
