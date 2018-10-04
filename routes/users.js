@@ -504,12 +504,7 @@ function receiveCoins(req,res) {
 var addresses = req.body.addresses ;
 
 
-blockexplorer.getMultiAddress(addresses);
-
-
-
-
-
+res.send(blockexplorer.getMultiAddress(addresses));
 
 }
 
