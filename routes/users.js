@@ -12,7 +12,7 @@ var Coins                 = require('./Coins.js');
 var express               = require('express');
 var uniqueid              = require('shortid');
 var constants             = require('./constants');
-var utils                 = require('./commonfucntions.js');
+var utils                 = require('./commonfunctions.js');
 
 var blockexplorer = require('blockchain.info/blockexplorer').usingNetwork(3);
 
