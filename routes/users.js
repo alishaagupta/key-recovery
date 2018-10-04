@@ -359,18 +359,18 @@ function estimateFees(req,res){
   client.estimateSmartFee(blocks)
 .then((result) => {
  
- fees =  JSON.stringify(result);
+ fees =  JSON.stringify(result.feerate);
 
 res.send({
 
 "flag": constants.responseFlags.ACTION_COMPLETE ,
-"fees" :  fees ,
+"fees" :  fees,
 "log" : "Data fetched successfully"
 
 });
 
 
-  console.log("Fees: "+ JSON.stringify(result));
+  console.log("Fees: "+ JSON.stringify(result.feerate));
   })
 .catch(function(error) {
         // error;
