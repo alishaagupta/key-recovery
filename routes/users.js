@@ -214,7 +214,7 @@ var sum ;
 
 var min_conf = 0
 var max_conf = 99999
-var blocks=6 
+
 
 
 // for (var k=0 ; k< address.length ; k++) {
@@ -223,6 +223,8 @@ var blocks=6
 client.listUnspent(min_conf,max_conf,addresses)
 .then(function(unspent) {
 
+console.log(unspent.length) ;
+ 
 sum = 0;
   for (var i = 0; i < unspent.length; i++) {
     sum += unspent[i].amount;
