@@ -116,7 +116,7 @@ function getTransaction(req,res) {
 
     res.send({
 
-      "result" : JSON.stringify(result) ,
+      "result" : result ,
       "flag" : constants.responseFlags.ACTION_COMPLETE
       });
 
@@ -154,7 +154,7 @@ function initialiseCoin(req,res){
   var asset_address = req.body.asset_address;
   var asset_data    = req.body.asset_data ;
 
-var array = re
+
 
    if(utils.checkBlank([asset_id,wallet_id,asset_address,asset_data])) {
     return res.send(constants.parameterMissingResponse);
