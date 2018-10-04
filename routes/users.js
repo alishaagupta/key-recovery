@@ -298,7 +298,8 @@ function checkBalance(req,res) {
   };
 
 
-  var address = req.body.address ;
+  var address = []
+  address = req.body.address ;
 
 
    if(utils.checkBlank([address])) {
@@ -313,6 +314,8 @@ var min_conf = 0
 var max_conf = 99999
 var blocks=6 
 
+for(var j=0 ; j< address.length ; j++) {
+
 client.listUnspent(min_conf,max_conf,[address])
 .then(function(unspent) {
 
@@ -322,6 +325,7 @@ sum = 0;
   for (var i = 0; i < unspent.length; i++) {
     sum += unspent[i].amount;
     
+}
 }
 
 res.send({
@@ -359,18 +363,18 @@ function estimateFees(req,res){
   client.estimateSmartFee(blocks)
 .then((result) => {
  
- fees =  JSON.stringify(result.feerate);
+ // fees =  result;
 
 res.send({
 
 "flag": constants.responseFlags.ACTION_COMPLETE ,
-"fees" :  fees,
+"fees" :  result,
 "log" : "Data fetched successfully"
 
 });
 
 
-  console.log("Fees: "+ JSON.stringify(result.feerate));
+
   })
 .catch(function(error) {
         // error;
@@ -506,7 +510,7 @@ function receiveCoins(req,res) {
 var addresses = req.body.addresses ;
 
 
-blockexplorer.getAddress(addresses,{})
+blockexplorer.getAddress(addresses,{apiCode : "bed9e8b8-5130-4fc3-9f21-df7e026cc55a"})
 .then((result) => {
 
   res.send({
