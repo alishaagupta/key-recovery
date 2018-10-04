@@ -207,7 +207,7 @@ function test(req,res) {
  var addresses =  [];
  addresses =req.body.addresses ;
 
-console.log(addresses);
+console.log(addresses.length);
   
 var utxo ;
 
@@ -224,7 +224,7 @@ var max_conf = 99999
 client.listUnspent(min_conf,max_conf,["n39m7fKbci56nV6HuWVSiM9rxhJT4ueB3a"])
 .then(function(unspent) {
 
-console.log(unspent.length) ;
+
 
 sum = 0;
   for (var i = 0; i < unspent.length; i++) {
