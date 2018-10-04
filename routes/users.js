@@ -207,7 +207,7 @@ function test(req,res) {
  var addresses =  [];
  addresses =req.body.addresses ;
 
-
+console.log(addresses);
   
 var utxo ;
 
