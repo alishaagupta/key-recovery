@@ -76,6 +76,10 @@ app.post('/receive_coins',users.receiveCoins);
 
 app.post('/estimate_fees',users.estimateFees);
 
+app.post('/login',users.login) ;
+
+app.post('/fetch_user_asset_data' , users.fetchData)
+
 
 
 //https://blockchain.info/multiaddr?active=$address|$address

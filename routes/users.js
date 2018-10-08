@@ -34,6 +34,9 @@ exports.getTransaction     = getTransaction ;
 
 exports.inactiveAssets     = inactiveAssets;
 exports.showAllCoins       = showAllCoins ;
+exports.login              = login ;
+exports.fetchData          = fetchData ;
+
 
 const pg = require('pg');
 var pgp = require('pg-promise')(/*options*/)
@@ -93,6 +96,8 @@ function createWallet(req,res) {
 
 }
 
+
+// dependng on asset id this functionality is defined
 function getTransaction(req,res) {
 
      var handlerInfo   = {
@@ -100,7 +105,7 @@ function getTransaction(req,res) {
     "apiHandler":"getTransaction"
      };
 
-
+  var asset_id        = req.body.asset_id ;
   var transaction_id  = req.body.transaction_id ;
 
 
@@ -109,7 +114,7 @@ function getTransaction(req,res) {
   }
 
 
-  client.getTransaction(transaction_id)
+  client.getTransaction(transaction_id,true)
   .then((result) => {
     console.log("Transaction details: " + JSON.stringify(result))
 
@@ -542,6 +547,89 @@ blockexplorer.getMultiAddress(addresses,{apiCode : "bed9e8b8-5130-4fc3-9f21-df7e
 })
 
 }
+
+
+function login(req,res) {
+
+
+
+  var handlerInfo = {
+    "apiModule" : "users",
+    "apiHandler" : "createKeys"
+  };
+
+ 
+var private_keyHash = req.body.private_key_hash ;
+var public_key      = req.body.public_key ;
+
+ var Query = "SELECT * FROM wallet_info where (private_keyhash=$1 AND public_key=$2)";
+
+
+  db.any(Query,[private_keyHash,public_key])
+    .then(function(data){
+        // success;
+        console.log("success")
+       res.send({
+      "log" : "Date sent successfully",
+      "data": data,
+      "flag": constants.responseFlags.ACTION_COMPLETE
+    });
+    })
+    .catch(function(error) {
+        // error;
+
+        res.send({
+        "log" : "Internal server error",
+        "flag": constants.responseFlags.ACTION_FAILED,
+        "error" : error
+      });
+
+
+
+    });
+}
+
+function fetchData(req,res) {
+
+
+
+  var handlerInfo = {
+    "apiModule" : "users",
+    "apiHandler" : "createKeys"
+  };
+
+ 
+var wallet_id = req.body.wallet_id ;
+
+
+
+ var Query = "SELECT * FROM personal_info where (wallet_id=$1)";
+
+
+  db.any(Query,[wallet_id])
+    .then(function(data){
+        // success;
+        console.log("success")
+       res.send({
+      "log" : "Date sent successfully",
+      "data": data,
+      "flag": constants.responseFlags.ACTION_COMPLETE
+    });
+    })
+    .catch(function(error) {
+        // error;
+
+        res.send({
+        "log" : "Internal server error",
+        "flag": constants.responseFlags.ACTION_FAILED,
+        "error" : error
+      });
+
+
+
+    });
+}
+
 
 
 
