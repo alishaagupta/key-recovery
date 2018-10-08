@@ -569,7 +569,7 @@ var public_key      = req.body.public_key ;
     .then(function(data){
         // success;
         console.log("success")
-      if(data.result != '')
+      if(data.length != 0)
        res.send({
       "log" : "Data fetched successfully",
       "result": data,
