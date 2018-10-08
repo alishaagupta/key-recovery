@@ -568,12 +568,20 @@ var public_key      = req.body.public_key ;
   db.any(Query,[private_keyHash,public_key])
     .then(function(data){
         // success;
-        console.log("success" +  Query)
+        console.log("success")
+      if(data.result != '')
        res.send({
-      "log" : "Date fetched successfully",
-      "data": data,
+      "log" : "Data fetched successfully",
+      "result": data,
       "flag": constants.responseFlags.ACTION_COMPLETE
     });
+
+     else {
+      res.send({
+        "log" : "User does not exist" ,
+        "flag" : constants.responseFlags.NOT_FOUND
+      })
+     }
     })
     .catch(function(error) {
         // error;
