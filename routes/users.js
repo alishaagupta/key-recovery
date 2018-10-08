@@ -565,7 +565,7 @@ var public_key      = req.body.public_key ;
  var Query = "SELECT wallet_id FROM wallet_info where private_keyhash=$1 AND public_key=$2";
 
 
-  db.any(Query,[private_keyHash,public_key])
+  db.none(Query,[private_keyHash,public_key])
     .then(function(data){
         // success;
         console.log("success")
