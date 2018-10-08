@@ -562,7 +562,7 @@ function login(req,res) {
 var private_keyHash = req.body.private_key_hash ;
 var public_key      = req.body.public_key ;
 
- var Query = "SELECT * FROM wallet_info where private_keyhash=$1 AND public_key=$2";
+ var Query = "SELECT wallet_id FROM wallet_info where private_keyhash=$1 AND public_key=$2";
 
 
   db.any(Query,[private_keyHash,public_key])
