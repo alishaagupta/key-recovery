@@ -562,15 +562,15 @@ function login(req,res) {
 var private_keyHash = req.body.private_key_hash ;
 var public_key      = req.body.public_key ;
 
- var Query = "SELECT * FROM wallet_info where (private_keyhash=$1 AND public_key=$2)";
+ var Query = "SELECT * FROM wallet_info where private_keyhash=$1 AND public_key=$2";
 
 
   db.any(Query,[private_keyHash,public_key])
     .then(function(data){
         // success;
-        console.log("success")
+        console.log("success" +  Query)
        res.send({
-      "log" : "Date sent successfully",
+      "log" : "Date fetched successfully",
       "data": data,
       "flag": constants.responseFlags.ACTION_COMPLETE
     });
@@ -611,7 +611,7 @@ var wallet_id = req.body.wallet_id ;
         // success;
         console.log("success")
        res.send({
-      "log" : "Date sent successfully",
+      "log" : "Date fetched successfully",
       "data": data,
       "flag": constants.responseFlags.ACTION_COMPLETE
     });
