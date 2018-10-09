@@ -105,7 +105,7 @@ function getTransaction(req,res) {
     "apiHandler":"getTransaction"
      };
 
-  var asset_id        = req.body.asset_id ;
+  // var asset_id        = req.body.asset_id ;
   var transaction_id  = req.body.transaction_id ;
 
 
@@ -113,17 +113,21 @@ function getTransaction(req,res) {
     return res.send(constants.parameterMissingResponse);
   }
 
-blockexplorer.getTx(transaction_id,{apiCode : "bed9e8b8-5130-4fc3-9f21-df7e026cc55a"})
-.then((result) => {
 
-  res.send({
+  client.getTransaction(transaction_id,true)
+  .then((result) => {
+    console.log("Transaction details: " + JSON.stringify(result))
 
-    "log" : "Data Fetched Successfully",
-    "result" : result ,
-    "flag": constants.responseFlags.ACTION_COMPLETE
 
-  })
-})
+    res.send({
+
+      "result" : result ,
+      "flag" : constants.responseFlags.ACTION_COMPLETE
+      });
+
+
+
+   })
    .catch(error => {
         // error;
 
