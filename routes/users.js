@@ -620,7 +620,7 @@ var wallet_id = req.body.wallet_id ;
         console.log("success")
        res.send({
       "log" : "Date fetched successfully",
-      "data": data,
+      "result": data,
       "flag": constants.responseFlags.ACTION_COMPLETE
     });
     })
