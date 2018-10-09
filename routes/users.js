@@ -611,7 +611,7 @@ var wallet_id = req.body.wallet_id ;
 
 
 
- var Query = "SELECT * FROM personal_info where (wallet_id=$1)";
+ var Query = "SELECT asset_id,asset_data FROM personal_info where (wallet_id=$1)";
 
 
   db.any(Query,[wallet_id])
