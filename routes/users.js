@@ -614,7 +614,7 @@ var wallet_id = req.body.wallet_id ;
  var Query = "SELECT asset_id,asset_data FROM personal_info where (wallet_id=$1)";
 
 
-  db.any(Query,[wallet_id])
+  db.one(Query,[wallet_id])
     .then(function(data){
         // success;
         console.log("success")
