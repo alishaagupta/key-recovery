@@ -113,21 +113,17 @@ function getTransaction(req,res) {
     return res.send(constants.parameterMissingResponse);
   }
 
+blockexplorer.getTx(transaction_id,{apiCode : "bed9e8b8-5130-4fc3-9f21-df7e026cc55a"})
+.then((result) => {
 
-  client.getTransaction(transaction_id,true)
-  .then((result) => {
-    console.log("Transaction details: " + JSON.stringify(result))
+  res.send({
 
+    "log" : "Data Fetched Successfully",
+    "result" : result ,
+    "flag": constants.responseFlags.ACTION_COMPLETE
 
-    res.send({
-
-      "result" : result ,
-      "flag" : constants.responseFlags.ACTION_COMPLETE
-      });
-
-
-
-   })
+  })
+})
    .catch(error => {
         // error;
 
