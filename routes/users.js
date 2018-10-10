@@ -13,7 +13,8 @@ var express               = require('express');
 var uniqueid              = require('shortid');
 var constants             = require('./constants');
 var utils                 = require('./commonfunctions.js');
-var blockchain            = require('blockchain.info')
+var blockchain            = require('blockchain.info');
+var async                 = require('async');
 
 
 var blockexplorer         = require('blockchain.info/blockexplorer').usingNetwork(3);
@@ -60,7 +61,7 @@ function createWallet(req,res) {
 
 
 
-   var private_key_hash    = req.body.private_key_hash;
+   var private_key_hash   = req.body.private_key_hash;
    var public_key         = req.body.public_key;
    var wallet_id          = uniqueid.generate() ;
 
@@ -222,10 +223,7 @@ var min_conf = 0
 var max_conf = 99999
 
 
-
-// for (var k=0 ; k< address.length ; k++) {
-
-// }
+                                                                      
 client.listUnspent(min_conf,max_conf,addresses)
 .then(function(unspent) {
 
@@ -534,17 +532,50 @@ function receiveCoins(req,res) {
 var addresses = req.body.addresses ;
 
 
-blockexplorer.getMultiAddress(addresses,{apiCode : "bed9e8b8-5130-4fc3-9f21-df7e026cc55a"})
-.then((result) => {
+var resultArr = [] ;
 
-  res.send({
+function getUtxo(callback) {
+
+ client.listUnspent(min_conf,max_conf,[address])
+.then(function(unspent) {
+callback(null,unspent);
+}
+
+    
+
+}
+ 
+
+
+function balanceDetails(callback){
+
+blockexplorer.getMultiAddress(addresses,{apiCode : "bed9e8b8-5130-4fc3-9f21-df7e026cc55a"})
+.then((result) =>{
+    callback(null,result);
+  })
+
+}
+
+resultArr.push(getUtxo,balanceDetails);
+
+async.parallel(resultArr,function(newErr,newRes){
+
+  var utxo = newRes[0]  ;
+  var result   = newRes[1] ;
+
+
+    res.send({
 
     "log" : "Data Fetched Successfully",
     "result" : result ,
+    "utxo"  : utxo,
     "flag": constants.responseFlags.ACTION_COMPLETE
 
   })
 })
+
+
+
 
 }
 
