@@ -540,7 +540,7 @@ function getUtxo(callback) {
 .then(function(unspent) {
 callback(null,unspent);
 }
-
+);
     
 
 }
