@@ -528,15 +528,15 @@ function receiveCoins(req,res) {
 		"apiHandler" : "createKeys"
 	};
 
- 
-var addresses = req.body.addresses ;
+ var addresses = [] ;
+addresses = req.body.addresses ;
 
 
 var resultArr = [] ;
 
 function getUtxo(callback) {
 
- client.listUnspent(0,99999,[addresses])
+ client.listUnspent(0,99999,addresses)
 .then(function(unspent) {
 callback(null,unspent);
 }
