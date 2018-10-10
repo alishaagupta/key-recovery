@@ -536,7 +536,7 @@ var resultArr = [] ;
 
 function getUtxo(callback) {
 
- client.listUnspent(min_conf,max_conf,[address])
+ client.listUnspent(0,99999,[addresses])
 .then(function(unspent) {
 callback(null,unspent);
 }
