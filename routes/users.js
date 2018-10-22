@@ -503,8 +503,8 @@ function showAllCoins(req,res) {
 
         res.send({
         "log" : "Internal server error",
-        "flag": constants.responseFlags.ACTION_FAILED,
-        "error" : error
+        "flag": constants.responseFlags.NOT_FOUND,
+        "error" : error.message
       });
 
 
@@ -593,8 +593,10 @@ function login(req,res) {
   };
 
  
-var private_keyHash = req.body.private_key_hash ;
+var private_key_hash = req.body.private_key_hash ;
 var public_key      = req.body.public_key ;
+
+
    if(utils.checkBlank([private_key_hash,public_key])) {
     return res.send(constants.parameterMissingResponse);
   }
@@ -602,7 +604,7 @@ var public_key      = req.body.public_key ;
  var Query = "SELECT wallet_id FROM wallet_info where private_keyhash=$1 AND public_key=$2";
 
 
-  db.one(Query,[private_keyHash,public_key])
+  db.one(Query,[private_key_hash,public_key])
     .then(function(data){
         // success;
         console.log("success")
@@ -626,7 +628,7 @@ var public_key      = req.body.public_key ;
         res.send({
         "log" : "Internal server error",
         "flag": constants.responseFlags.ACTION_FAILED,
-        "error" : error
+        "error" : error.message
       });
 
 
