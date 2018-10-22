@@ -668,9 +668,8 @@ var wallet_id = req.body.wallet_id ;
         // error;
 
         res.send({
-        "log" : "Internal server error",
-        "flag": constants.responseFlags.ACTION_FAILED,
-        "error" : error.message
+        "flag": constants.responseFlags.NOT_FOUND,
+        "log" : error.message
       });
 
 
