@@ -166,10 +166,10 @@ function initialiseCoin(req,res){
     return res.send(constants.parameterMissingResponse);
   }
 
-var Query = "INSERT INTO personal_info(asset_id,wallet_id,asset_address,asset_data,created_on) VALUES($1,$2,$3,$4,$5)";
+var Query = "INSERT INTO personal_info(asset_id,wallet_id,asset_data,created_on) VALUES($1,$2,$3,$4)";
 
 
-  db.none(Query, [asset_id,wallet_id,asset_address,asset_data, new Date()])
+  db.none(Query, [asset_id,wallet_id,asset_data, new Date()])
     .then(function(result) {
         // success;
         console.log("success")
