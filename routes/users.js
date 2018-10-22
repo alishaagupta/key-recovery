@@ -436,7 +436,9 @@ function sendCoins(req,res) {
  var transaction_hash = req.body.transaction_hash ;
 
 
-
+   if(utils.checkBlank([transaction_hash])) {
+    return res.send(constants.parameterMissingResponse);
+  }
 
 client.sendRawTransaction(transaction_hash,true)
 .then((transaction_ID) => {
@@ -536,11 +538,12 @@ var resultArr = [] ;
 
 function getUtxo(callback) {
 
- client.listUnspent(0,99999,addresses)
-.then(function(unspent) {
-callback(null,unspent);
-}
-);
+    client.listUnspent(0,99999,addresses)
+     .then(function(unspent) 
+     {
+       callback(null,unspent);
+      }
+    );
     
 
 }
@@ -592,6 +595,9 @@ function login(req,res) {
  
 var private_keyHash = req.body.private_key_hash ;
 var public_key      = req.body.public_key ;
+   if(utils.checkBlank([private_key_hash,public_key])) {
+    return res.send(constants.parameterMissingResponse);
+  }
 
  var Query = "SELECT wallet_id FROM wallet_info where private_keyhash=$1 AND public_key=$2";
 
@@ -640,14 +646,59 @@ function fetchData(req,res) {
  
 var wallet_id = req.body.wallet_id ;
 
-
+   if(utils.checkBlank([wallet_id])) {
+    return res.send(constants.parameterMissingResponse);
+  }
 
  var Query = "SELECT asset_id,asset_data FROM personal_info where (wallet_id=$1)";
 
 
   db.one(Query,[wallet_id])
     .then(function(data){
-        // success;
+      
+
+
+    error(err, e) {
+
+        if (e.cn) {
+            // this is a connection-related error
+            // cn = safe connection details passed into the library:
+            //      if password is present, it is masked by #
+       res.send({
+      "log" : "Internal Server error",
+      "flag": constants.responseFlags.INTERNAL_SERVER_ERR
+    });
+
+        }
+            if (e.query) {
+            // query string is available
+
+      res.send({
+      "log" : "No data returned from query ",
+      "flag": constants.responseFlags.NOT_FOUND
+    });
+
+            if (e.params) {
+                // query parameters are available
+
+      res.send({
+      "log" : "No data returned from query ",
+      "flag": constants.responseFlags.NOT_FOUND
+    });
+
+            }
+        }
+
+        if (e.ctx) {
+            // occurred inside a task or transaction
+                 res.send({
+      "log" : "Internal Server error",
+      "flag": constants.responseFlags.INTERNAL_SERVER_ERR
+    });
+        }
+      }
+};
+
         console.log("success")
        res.send({
       "log" : "Date fetched successfully",
@@ -661,7 +712,7 @@ var wallet_id = req.body.wallet_id ;
         res.send({
         "log" : "Internal server error",
         "flag": constants.responseFlags.ACTION_FAILED,
-        "error" : error
+        "error" : error.message
       });
 
 

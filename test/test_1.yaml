@@ -1,0 +1,15 @@
+config:
+  target: https://your-website-link
+  phases:
+    - duration: 10
+      arrivalRate: 10
+scenarios:
+  - flow:
+      - get:
+          # add the url you need to send get request
+          url: "/"
+          capture:
+          # capturing responce using reg expression
+            - regexp: "[^]*"
+              as: "response"
+      - log: "response= {{response}}"
