@@ -656,47 +656,6 @@ var wallet_id = req.body.wallet_id ;
   db.one(Query,[wallet_id])
     .then(function(data){
       
-
-
-    error(err, e) {
-
-        if (e.cn) {
-            // this is a connection-related error
-            // cn = safe connection details passed into the library:
-            //      if password is present, it is masked by #
-       res.send({
-      "log" : "Internal Server error",
-      "flag": constants.responseFlags.INTERNAL_SERVER_ERR
-    });
-
-        }
-            if (e.query) {
-            // query string is available
-
-      res.send({
-      "log" : "No data returned from query ",
-      "flag": constants.responseFlags.NOT_FOUND
-    });
-
-            if (e.params) {
-                // query parameters are available
-
-      res.send({
-      "log" : "No data returned from query ",
-      "flag": constants.responseFlags.NOT_FOUND
-    });
-
-            }
-        }
-
-        if (e.ctx) {
-            // occurred inside a task or transaction
-                 res.send({
-      "log" : "Internal Server error",
-      "flag": constants.responseFlags.INTERNAL_SERVER_ERR
-    });
-        }
-      }
 };
 
         console.log("success")
