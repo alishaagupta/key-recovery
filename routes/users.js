@@ -656,7 +656,6 @@ var wallet_id = req.body.wallet_id ;
   db.one(Query,[wallet_id])
     .then(function(data){
       
-};
 
         console.log("success")
        res.send({
