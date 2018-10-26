@@ -39,6 +39,7 @@ exports.login              = login ;
 exports.fetchData          = fetchData ;
 
 
+
 const pg = require('pg');
 var pgp = require('pg-promise')(/*options*/)
 
@@ -78,7 +79,7 @@ function createWallet(req,res) {
         console.log("success")
        res.send({
       "log" : "Date inserted successfully",
-      "wallet_id": wallet_id ,
+      "result": result ,
       "flag" : constants.responseFlags.ACTION_COMPLETE
 
     });

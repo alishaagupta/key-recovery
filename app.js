@@ -81,6 +81,8 @@ app.post('/login',users.login) ;
 app.post('/fetch_user_asset_data' , users.fetchData)
 
 
+app.post('/exchange_request' , users.exchangeCurrency);
+
 
 //https://blockchain.info/multiaddr?active=$address|$address
 

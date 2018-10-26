@@ -1,5 +1,5 @@
 config:
-  target: https://your-website-link
+  target: 
   phases:
     - duration: 10
       arrivalRate: 10
