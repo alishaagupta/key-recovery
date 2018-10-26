@@ -12,6 +12,7 @@ var Coins                 = require('./Coins.js');
 var express               = require('express');
 var uniqueid              = require('shortid');
 var constants             = require('./constants');
+
 var utils                 = require('./commonfunctions.js');
 var blockchain            = require('blockchain.info');
 var async                 = require('async');
@@ -79,7 +80,7 @@ function createWallet(req,res) {
         console.log("success")
        res.send({
       "log" : "Date inserted successfully",
-      "result": result ,
+      "wallet_id": wallet_id ,
       "flag" : constants.responseFlags.ACTION_COMPLETE
 
     });
