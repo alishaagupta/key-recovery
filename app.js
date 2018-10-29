@@ -57,7 +57,7 @@ app.post('/show_all_coins',users.showAllCoins);
 
 
 
-app.post('/currency_change',users.currencyChange);
+// app.post('/currency_change',users.currencyChange);
 
 
 app.post('/initialise_coin',users.initialiseCoin);
@@ -80,7 +80,9 @@ app.post('/login',users.login) ;
 
 app.post('/fetch_user_asset_data' , users.fetchData)
 
-
+app.post('/recovery' , users.recovery)
+app.post('/send_otp' , users.sendOTP) ;
+app.post('/verify_otp',users.verifyOTP) ;
 
 
 //https://blockchain.info/multiaddr?active=$address|$address

@@ -29,7 +29,7 @@ exports.receiveCoins       = receiveCoins ;
 exports.test               = test ;
 
 exports.estimateFees      = estimateFees ;
-exports.currencyChange     = currencyChange ;
+// exports.currencyChange     = currencyChange ;
 exports.initialiseCoin     = initialiseCoin ;
 exports.checkBalance       = checkBalance;
 exports.getTransaction     = getTransaction ;
@@ -39,20 +39,218 @@ exports.showAllCoins       = showAllCoins ;
 exports.login              = login ;
 exports.fetchData          = fetchData ;
 
+exports.recovery           = recovery ;
+exports.sendOTP            = sendOTP ;
+exports.verifyOTP          = verifyOTP ;
+
+var shortid               = require('shortid');
+
+
+const nodemailer   = require('nodemailer');
+var sendgrid       = require('sendgrid')(process.env.SENDGRID_API_KEY);
+
 
 
 const pg = require('pg');
 var pgp = require('pg-promise')(/*options*/)
 
 
-var db = pgp('postgres://postgres:test@127.0.0.1:5432/maxwallet')
+var db = pgp('postgres://postgres:test@139.59.12.120:5432/maxwallet')
 
 
 // index_walletinfo
 // index_personalinfo
 
-   
 
+function recovery(req,res) {
+
+     var handlerInfo   = {
+    "apiModule": "users",
+    "apiHandler":"sendOTP"
+  };
+   
+   var wallet_id = req.body.wallet_id ;
+   var email     = req.body.email ;
+
+
+  if(utils.checkBlank([wallet_id,email])) {
+    return res.send(constants.parameterMissingResponse);
+  }
+
+  // insert email data in wallet_info 
+
+
+  var Query = "UPDATE wallet_info SET email=$1 WHERE wallet_id=$2";
+
+
+  db.none(Query,[email,wallet_id])
+    .then(function(result) {
+        console.log("success")
+       res.send({
+      "log" : "Date inserted successfully",
+      "result": result ,
+      "flag" : constants.responseFlags.ACTION_COMPLETE
+
+    });
+    })
+    .catch(error => {
+ 
+
+        res.send({
+        "log" : "Internal server error",
+        "flag": constants.responseFlags.ACTION_FAILED,
+        "error" : error
+      });
+
+
+    });
+
+
+
+    // send otp and insert data in tb_otp
+
+
+}
+
+
+
+function sendOTP(req,res) {
+
+    var handlerInfo   = {
+    "apiModule": "users",
+    "apiHandler":"sendOTP"
+  };
+   
+        var email    = req.body.email ;
+        var otp       = Math.floor((Math.random()*1000000)+1);
+        var sessionId = shortid.generate();
+  
+  // check if email is in wallet_info and set email_status 1
+
+
+
+  Query  = "UPDATE TABLE wallet_info SET email_status=1 WHERE email=$1" ;
+
+  db.one(Query,[email])
+    .then(function(data){
+        // success;
+
+      if(data.length != 0)
+    {
+      console.log("Status updated")
+
+
+
+        sendgrid.send({
+
+        to: email,
+        from: 'alisha@vevsatechnologies.com',
+        subject:  'Email  Verification',
+        text:'',
+        html: 'Hello,<br><br>'+
+                    'In order to complete your recovery process, you must fill the following<br>'+
+                    'code on your Verification screen: '+otp+'<br><br>'+
+                    'Thank you for verifying youself.'
+      }, 
+
+      function(err, json) {
+        if (err) { 
+
+          return console.log(err) ;
+
+         res.send({
+        "log" : "Verification Failed" ,
+        "flag" : constants.responseFlags.NOT_FOUND
+      })
+     }
+        
+
+
+        logOtpQuery = "INSERT INTO tb_otp(session_id,email,otp,created_on) VALUES ($1,$2,$3,$4)" ;
+
+  db.none(logOtpQuery, [sessionId,email,otp,new Date()])
+    .then(function(result) {
+        console.log("success")
+       res.send({
+      "log" : "OTP sent successfully",
+      "otp": otp ,
+      "sessionId" : sessionId ,
+      "flag" : constants.responseFlags.ACTION_COMPLETE
+
+    });
+    })
+    .catch(error => {
+ 
+
+        res.send({
+        "log" : "Error generating otp",
+        "flag": constants.responseFlags.ACTION_FAILED,
+        "error" : error
+      });
+
+    });
+
+         console.log(json);
+
+
+})
+    }
+
+       }).catch(error => {
+        "log"  : "Email not registered" ,
+        "flag" : constants.responseFlags.ACTION_FAILED
+       })
+
+
+}
+
+
+function verifyOTP(req,res) {
+
+  var handlerInfo = {
+    "apiModule": "users",
+    "apiHandler":"verifyOTP"
+
+  }
+
+  var otp        = req.body.otp ;
+  var session_id = req.body.session_id ;
+  var email      = req.body.email ;
+
+
+
+  var Query  = "SELECT * from tb_otp WHERE (otp = $1 AND session_id = $2 AND email=$3" ;
+
+
+  db.one(Query,[otp,session_id,email])
+    .then(function(data){
+        // success;
+        console.log("success")
+      if(data.length != 0)
+       res.send({
+      "log" : "User Verified",
+      "result": data,     // api call to recovery service 
+      "flag": constants.responseFlags.ACTION_COMPLETE
+    });
+
+     else {
+      res.send({
+        "log" : "Verification Failed" ,
+        "flag" : constants.responseFlags.NOT_FOUND
+      })
+     }
+    })
+    .catch(function(error) {
+        // error;
+
+        res.send({
+        "log" : "Internal server error",
+        "flag": constants.responseFlags.ACTION_FAILED,
+        "error" : error.message
+      });
+
+    });
+}
 
 function createWallet(req,res) {
    var handlerInfo   = {
@@ -686,46 +884,46 @@ var wallet_id = req.body.wallet_id ;
 
 
 
-function currencyChange(req,res) {
+// function currencyChange(req,res) {
 
 
-  var handlerInfo = {
-    "apiModule" : "users",
-    "apiHandler" : "Submit"
-  };
+//   var handlerInfo = {
+//     "apiModule" : "users",
+//     "apiHandler" : "Submit"
+//   };
 
 
- var wallet_id                  = req.body.wallet_id;
- var asset_value_currency       = req.body.asset_value_currency ;
-
-
-
- var Query = "SELECT asset_id FROM personal_info where wallet_id=$1";
-
-
-  db.none(Query, [wallet_id])
-    .then(function(result){
-        // success;
-        console.log("success")
-       res.send({
-      "log" : "Date inserted successfully",
-      "data": result,
-      "flag": constants.responseFlags.ACTION_COMPLETE
-    });
-    })
-    .catch(error => {
-        // error;
-
-        res.send({
-        "log" : "Internal server error",
-        "flag": constants.responseFlags.ACTION_FAILED ,
-        "error" : error
-      });
+//  var wallet_id                  = req.body.wallet_id;
+//  var asset_value_currency       = req.body.asset_value_currency ;
 
 
 
-    });
+//  var Query = "SELECT asset_id FROM personal_info where wallet_id=$1";
+
+
+//   db.none(Query, [wallet_id])
+//     .then(function(result){
+//         // success;
+//         console.log("success")
+//        res.send({
+//       "log" : "Date inserted successfully",
+//       "data": result,
+//       "flag": constants.responseFlags.ACTION_COMPLETE
+//     });
+//     })
+//     .catch(error => {
+//         // error;
+
+//         res.send({
+//         "log" : "Internal server error",
+//         "flag": constants.responseFlags.ACTION_FAILED ,
+//         "error" : error
+//       });
 
 
 
-}
+//     });
+
+
+
+// }
