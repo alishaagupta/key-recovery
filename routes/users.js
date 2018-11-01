@@ -39,9 +39,12 @@ exports.showAllCoins       = showAllCoins ;
 exports.login              = login ;
 exports.fetchData          = fetchData ;
 
-exports.recovery           = recovery ;
+
 exports.sendOTP            = sendOTP ;
 exports.verifyOTP          = verifyOTP ;
+exports.addFriends         = addFriends ;
+exports.sendRecoveryOtp    = sendRecoveryOtp ;
+exports.verifyRecoveryOtp  = verifyRecoveryOtp;
 
 var shortid               = require('shortid');
 
@@ -62,36 +65,87 @@ var db = pgp('postgres://postgres:test@139.59.12.120:5432/maxwallet')
 // index_personalinfo
 
 
-function recovery(req,res) {
+function sendRecoveryOtp(req,res) {
 
      var handlerInfo   = {
     "apiModule": "users",
-    "apiHandler":"sendOTP"
+    "apiHandler":"Send Recovery Otp"
   };
-   
-   var wallet_id = req.body.wallet_id ;
+ 
    var email     = req.body.email ;
+   var otp       = Math.floor((Math.random()*1000000)+1);
+   var sessionId = shortid.generate();
+  
 
-
-  if(utils.checkBlank([wallet_id,email])) {
+  if(utils.checkBlank([email])) {
     return res.send(constants.parameterMissingResponse);
   }
 
   // insert email data in wallet_info 
 
 
-  var Query = "UPDATE wallet_info SET email=$1 WHERE wallet_id=$2";
+  var Query = "SELECT * FROM wallet_info where email=$1";
 
 
-  db.none(Query,[email,wallet_id])
+  db.any(Query,[email])
     .then(function(result) {
-        console.log("success")
-       res.send({
-      "log" : "Date inserted successfully",
-      "result": result ,
-      "flag" : constants.responseFlags.ACTION_COMPLETE
 
-    });
+        if(result.length == 0) {
+         return res.send({
+            "log" : "User has not set up recovery" ,
+            "flag" : constants.responseFlags.ACTION_FAILED
+          })
+        }
+    
+      else {
+
+        sendgrid.send({
+
+        to: email,
+        from: 'alisha@vevsatechnologies.com',
+        subject:'Email Verification',
+        text:'',
+        html: 'Hello,<br><br>'+
+                    'In order to complete your recovery process, you must fill the following<br>'+
+                    'code on your Verification screen: '+otp+'<br><br>'+
+                    'Thank you for verifying yourself.'
+      }, 
+
+      function(err, json) {
+        if (err) { return console.error(err); }
+
+        insertQuery = "INSERT INTO tb_otp(otp,email,session_id,created_on) VALUES ($1,$2,$3,$4)";
+        db.none(insertQuery,[otp, email,sessionId,new Date()])
+        .then(function(logErr, logRes) {
+        if(logErr) {
+          return res.send({
+            "log": "There was some error in generating otp",
+            "flag": constants.responseFlags.ACTION_FAILED,
+            "err":logErr
+          });
+        }
+   
+
+          if(logErr) {
+            return res.send({
+              "log": "Error in creating user",
+              "flag": constants.responseFlags.ACTION_FAILED
+            });
+          }
+
+
+          res.send({
+            "log": "Otp sent successfully",
+            "session_id": sessionId,
+            "flag": constants.responseFlags.ACTION_COMPLETE
+          });
+      });
+        console.log(json);
+      });
+  
+
+      }
+      
     })
     .catch(error => {
  
@@ -113,6 +167,109 @@ function recovery(req,res) {
 }
 
 
+function verifyRecoveryOtp(req,res){
+
+  var handlerInfo = {
+    "apiModule" : "users" ,
+    "apiHandler" : "Verify Recovery OTP"
+  }
+
+  var otp = req.body.otp ;
+  var session_id = req.body.session_id ;
+  var email = req.body.email ;
+
+
+  var Query  = "SELECT * from tb_otp WHERE (otp = $1 AND session_id = $2)" ;
+
+
+    db.any(Query,[otp,session_id])
+    .then(function(data){
+        // success;
+     
+      if(data.length == 0) {
+
+        return res.send({
+          "log": "Verification Failed",
+          "flag" : constants.responseFlags.ACTION_FAILED
+        })
+                 
+
+        }
+
+
+        else {
+
+          newQuery = "SELECT * from wallet_info where email = $1" ;
+
+          db.one(newQuery,[email])
+          .then(function(result){
+
+            res.send({
+              "log" : "User fetched data" ,
+              "flag" : constants.responseFlags.ACTION_COMPLETE,
+              "result" : result
+
+            })
+          })
+        }
+      })
+        //update data in wallet_info 
+     
+
+
+    .catch(function(error) {
+        // error;
+
+        res.send({
+        "log" : "Internal server error",
+        "flag": constants.responseFlags.ACTION_FAILED,
+        "error" : error.message
+      });
+
+    });
+
+
+}
+
+
+
+function addFriends(req,res) {
+
+    var handlerInfo   = {
+    "apiModule": "users",
+    "apiHandler":"add friends"
+  };
+   
+
+   var public_key = req.body.public_key ;
+
+Query = "SELECT * FROM wallet_info where public_key=$1" ;
+
+db.any(Query,[public_key])
+.then(function (data) {
+
+  if(data.length == 0) {
+
+    res.send({
+            "log" : "user does not exist",
+            "flags" : constants.responseFlags.ACTION_FAILED
+
+    })
+  }
+
+
+  else {
+
+    res.send({
+
+      "log" : "Friend can be added" ,
+      "flags" : constants.responseFlags.ACTION_COMPLETE
+     })
+  }
+})
+
+
+}
 
 function sendOTP(req,res) {
 
@@ -121,85 +278,77 @@ function sendOTP(req,res) {
     "apiHandler":"sendOTP"
   };
    
-        var email    = req.body.email ;
+        var email     = req.body.email ;
         var otp       = Math.floor((Math.random()*1000000)+1);
         var sessionId = shortid.generate();
   
-  // check if email is in wallet_info and set email_status 1
 
+  // check if email exists 
 
+  checkQuery  = "SELECT * FROM wallet_info where email=$1" ;
+  db.any(checkQuery,[email])
+    .then(function (data) {
 
-  Query  = "UPDATE TABLE wallet_info SET email_status=1 WHERE email=$1" ;
+        if(data.length != 0) {
 
-  db.one(Query,[email])
-    .then(function(data){
-        // success;
-
-      if(data.length != 0)
-    {
-      console.log("Status updated")
-
-
+          res.send({
+            "log" : "user already exists",
+            "flags" : constants.responseFlags.ACTION_FAILED
+          })
+        }
+        else {
 
         sendgrid.send({
 
         to: email,
-        from: 'alisha@vevsatechnologies.com',
-        subject:  'Email  Verification',
+        from:'alisha@vevsatechnologies.com',
+        subject:'Email  Verification',
         text:'',
-        html: 'Hello,<br><br>'+
+        html:'Hello,<br><br>'+
                     'In order to complete your recovery process, you must fill the following<br>'+
                     'code on your Verification screen: '+otp+'<br><br>'+
-                    'Thank you for verifying youself.'
+                    'Thank you for verifying yourself.'
       }, 
 
       function(err, json) {
-        if (err) { 
+        if (err) { return console.error(err); }
 
-          return console.log(err) ;
+        insertQuery = "INSERT INTO tb_otp(otp,email,session_id,created_on) VALUES ($1,$2,$3,$4)";
+        db.none(insertQuery,[otp, email,sessionId,new Date()])
+        .then(function(logErr, logRes) {
+        if(logErr) {
+          return res.send({
+            "log": "There was some error in generating otp",
+            "flag": constants.responseFlags.ACTION_FAILED,
+            "err":logErr
+          });
+        }
+   
 
-         res.send({
-        "log" : "Verification Failed" ,
-        "flag" : constants.responseFlags.NOT_FOUND
-      })
-     }
-        
+          // if(logErr) {
+          //   return res.send({
+          //     "log": "Error in creating user",
+          //     "flag": constants.responseFlags.ACTION_FAILED
+          //   });
+          // }
 
 
-        logOtpQuery = "INSERT INTO tb_otp(session_id,email,otp,created_on) VALUES ($1,$2,$3,$4)" ;
-
-  db.none(logOtpQuery, [sessionId,email,otp,new Date()])
-    .then(function(result) {
-        console.log("success")
-       res.send({
-      "log" : "OTP sent successfully",
-      "otp": otp ,
-      "sessionId" : sessionId ,
-      "flag" : constants.responseFlags.ACTION_COMPLETE
-
-    });
-    })
-    .catch(error => {
- 
-
-        res.send({
-        "log" : "Error generating otp",
-        "flag": constants.responseFlags.ACTION_FAILED,
-        "error" : error
+          res.send({
+            "log": "Otp sent successfully",
+            "session_id": sessionId,
+            "flag": constants.responseFlags.ACTION_COMPLETE
+          });
       });
+        console.log(json);
+      });
+  
 
-    });
 
-         console.log(json);
+        }
+
+      })
 
 
-})
-    }
-
-       }).catch(error => {
-        "log"  : "Email not registered" ,
-        "flag" : constants.responseFlags.ACTION_FAILED
-       })
 
 
 }
@@ -213,25 +362,50 @@ function verifyOTP(req,res) {
 
   }
 
-  var otp        = req.body.otp ;
-  var session_id = req.body.session_id ;
-  var email      = req.body.email ;
+  var otp            = req.body.otp ;      
+  var session_id     = req.body.session_id ;
+  var email          = req.body.email ;
+  var public_key     = req.body.public_key ;
 
 
 
-  var Query  = "SELECT * from tb_otp WHERE (otp = $1 AND session_id = $2 AND email=$3" ;
+  var Query  = "SELECT * from tb_otp WHERE (otp = $1 AND session_id = $2)" ;
 
 
-  db.one(Query,[otp,session_id,email])
+  db.any(Query,[otp,session_id])
     .then(function(data){
         // success;
         console.log("success")
-      if(data.length != 0)
+      if(data.length != 0) {
+
+        //update data in wallet_info 
+      updateQuery = "UPDATE wallet_info SET email=$1 , email_status=1 where public_key=$2";
+
+
+  db.none(updateQuery,[email,public_key])
+    .then(function(result) {
+        console.log("user data updated with email")
+      })
+
+    .catch(error => {
+ 
+
+        res.send({
+        "log" : "Internal server error",
+        "flag": constants.responseFlags.ACTION_FAILED,
+        "error" : error
+      });
+
+
+    });
+
        res.send({
+      
       "log" : "User Verified",
       "result": data,     // api call to recovery service 
       "flag": constants.responseFlags.ACTION_COMPLETE
     });
+     }
 
      else {
       res.send({

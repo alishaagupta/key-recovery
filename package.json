@@ -27,8 +27,10 @@
     "https": "^1.0.0",
     "morgan": "^1.9.1",
     "node-gcm": "^1.0.2",
+    "nodemailer": "^4.6.8",
     "pg": "^7.4.3",
     "pg-promise": "^8.4.6",
+    "sendgrid": "^1.9.2",
     "shortid": "^2.2.13"
   }
 }

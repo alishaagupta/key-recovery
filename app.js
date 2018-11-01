@@ -80,11 +80,17 @@ app.post('/login',users.login) ;
 
 app.post('/fetch_user_asset_data' , users.fetchData)
 
-app.post('/recovery' , users.recovery)
+
+
 app.post('/send_otp' , users.sendOTP) ;
 app.post('/verify_otp',users.verifyOTP) ;
 
+app.post('/add_friends',users.addFriends) ;
 
+
+app.post('/send_recovery_otp',users.sendRecoveryOtp) ;
+
+app.post('/verify_recovery_otp',users.verifyRecoveryOtp);
 //https://blockchain.info/multiaddr?active=$address|$address
 
 /**
